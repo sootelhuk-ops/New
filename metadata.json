@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix تطبيق الرسم المساحي",
+  "description": "تطبيق رسم هندسي ومساحي متقدم لاستخراج نماذج كروكي شبكات الكهرباء والمسافات وأوامر العمل المعتمدة بصيغة PDF مع تحرير كامل للخطوط والرموز والأختام والتواقيع.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
