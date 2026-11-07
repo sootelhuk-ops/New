@@ -55,6 +55,8 @@ export const ElementPropertiesModal: React.FC<ElementPropertiesModalProps> = ({
   const getElementTypeName = (el: CanvasElement) => {
     switch (el.type) {
       case 'line':
+        if (el.strokeStyle === 'dashed') return 'خط متقطع (كيبل منقوط مع الطول)';
+        if (el.isMilling || el.soilType === 'KASHT') return 'مسار كشط مع كيبل {5584}';
         if (el.soilType === 'AS') return 'كيبل أسفلت {AS}';
         if (el.soilType === 'NG') return 'كيبل ترابي {NG}';
         if (el.soilType === 'T') return 'كيبل بلاط {T}';
@@ -515,6 +517,55 @@ export const ElementPropertiesModal: React.FC<ElementPropertiesModalProps> = ({
               <p className="text-[10px] text-blue-700 leading-relaxed">
                 يرسم الكيبل محاطاً بحدود كشط منقطة وشبكة رصف وزوايا مربعة مطابقة تماماً للمواصفة الهندسية في صورة 5584.
               </p>
+            </div>
+          )}
+
+          {/* Line Style Toggle: Solid vs Dashed */}
+          {(element.type === 'line' || element.type === 'dimension') && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+              <label className="block text-[11px] font-bold text-slate-700">
+                نمط رسم الخط (مستمر أو متقطع):
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = elements.map((item) =>
+                      item.id === element.id
+                        ? { ...item, strokeStyle: 'solid' as const }
+                        : item
+                    );
+                    onElementsChange(updated);
+                  }}
+                  className={`py-1.5 px-2 rounded-lg font-bold border transition-colors flex items-center justify-center gap-1.5 ${
+                    element.strokeStyle !== 'dashed'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="w-4 h-0.5 bg-current rounded-full" />
+                  <span>خط مستمر صلب</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = elements.map((item) =>
+                      item.id === element.id
+                        ? { ...item, strokeStyle: 'dashed' as const }
+                        : item
+                    );
+                    onElementsChange(updated);
+                  }}
+                  className={`py-1.5 px-2 rounded-lg font-bold border transition-colors flex items-center justify-center gap-1.5 ${
+                    element.strokeStyle === 'dashed'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="w-4 h-0.5 border-b-2 border-dashed border-current" />
+                  <span>خط متقطع (منقوط)</span>
+                </button>
+              </div>
             </div>
           )}
 

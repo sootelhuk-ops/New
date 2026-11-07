@@ -72,7 +72,7 @@ interface CadToolbarProps {
   onOpenDriveModal?: () => void;
   presetCableLength?: number | null;
   setPresetCableLength?: (len: number | null | ((prev: number | null) => number | null)) => void;
-  onInsertPredefinedCable?: (meters: number, type: 'KASHT' | 'AS' | 'NG' | 'T', direction: 'vertical' | 'horizontal') => void;
+  onInsertPredefinedCable?: (meters: number, type: 'KASHT' | 'AS' | 'NG' | 'T' | 'DASHED', direction: 'vertical' | 'horizontal') => void;
   isAddPageTextActive?: boolean;
   onTogglePageText?: () => void;
   onInsertPresetText?: (preset: string) => void;
@@ -123,7 +123,7 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
 }) => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [insertLengthMeters, setInsertLengthMeters] = useState<number>(6);
-  const [insertType, setInsertType] = useState<'KASHT' | 'AS' | 'NG' | 'T'>('KASHT');
+  const [insertType, setInsertType] = useState<'KASHT' | 'AS' | 'NG' | 'T' | 'DASHED'>('KASHT');
   const [insertDirection, setInsertDirection] = useState<'vertical' | 'horizontal'>('vertical');
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -168,6 +168,8 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
         return 'كيبل ترابي {NG}';
       case 'cable_t':
         return 'كيبل بلاط {T}';
+      case 'cable_dashed':
+        return 'خط متقطع (كيبل منقوط مع الطول)';
       case 'subscription':
         return 'اشتراك وعداد (2658/3853)';
       case 'line':
@@ -479,7 +481,7 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
             <button
               onClick={() => toggleMenu('cables_menu')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-all ${
-                openMenu === 'cables_menu' || ['cable_as', 'cable_ng', 'cable_t', 'cable_kasht'].includes(activeTool)
+                openMenu === 'cables_menu' || ['cable_as', 'cable_ng', 'cable_t', 'cable_kasht', 'cable_dashed'].includes(activeTool)
                   ? 'bg-blue-900/60 text-blue-300 font-bold'
                   : 'hover:bg-slate-800 text-slate-200'
               }`}
@@ -567,6 +569,26 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
                   {activeTool === 'cable_t' && <Check className="w-3.5 h-3.5 text-emerald-400" />}
                 </button>
 
+                {/* 5. خط متقطع (منقوط مع الطول) */}
+                <button
+                  onClick={() => handleSelectTool('cable_dashed')}
+                  className={`w-full text-right px-3.5 py-2 flex items-center justify-between hover:bg-slate-700/80 ${
+                    activeTool === 'cable_dashed' ? 'bg-blue-600/30 text-blue-300 font-bold' : 'text-slate-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-5 h-0.5 border-b-2 border-dashed border-blue-400 shrink-0" />
+                    <div>
+                      <div className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+                        <span>خط متقطع (كيبل منقوط مع الطول)</span>
+                        <span className="text-[9px] bg-slate-700 text-slate-300 px-1 py-0.2 rounded font-mono">Dashed</span>
+                      </div>
+                      <div className="text-[10px] text-slate-400">مسار متقطع مع قياس الطول بالمتر والتحكم فيه</div>
+                    </div>
+                  </div>
+                  {activeTool === 'cable_dashed' && <Check className="w-3.5 h-3.5 text-blue-400" />}
+                </button>
+
                 {/* قائمة رسم طول الكيبل المباشر وتثبيت الطول */}
                 <div className="mt-2 pt-2 border-t border-slate-700/80 px-3.5 space-y-2.5 bg-slate-900/40 pb-1 rounded-b-xl">
                   <div className="flex items-center justify-between">
@@ -625,6 +647,7 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
                           <option value="AS">أسفلت AS</option>
                           <option value="NG">ترابي NG</option>
                           <option value="T">بلاط T</option>
+                          <option value="DASHED">خط متقطع (منقوط)</option>
                         </select>
                         <select
                           value={insertDirection}
@@ -1272,6 +1295,19 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
 
           {/* Quick Cable Buttons */}
           <button
+            onClick={() => setActiveTool('cable_kasht')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors font-medium ${
+              activeTool === 'cable_kasht'
+                ? 'bg-blue-600 text-white font-bold shadow-xs'
+                : 'hover:bg-slate-700 text-blue-300'
+            }`}
+            title="مسار كشط أسفلت مع كيبل {صورة 5584}"
+          >
+            <span className="w-2.5 h-1 border border-dashed border-blue-400 bg-blue-500/30 rounded-xs" />
+            <span>الكشط</span>
+          </button>
+
+          <button
             onClick={() => setActiveTool('cable_as')}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors font-medium ${
               activeTool === 'cable_as'
@@ -1308,6 +1344,19 @@ export const CadToolbar: React.FC<CadToolbarProps> = ({
           >
             <span className="w-2.5 h-1 bg-emerald-500 rounded-full" />
             <span>كيبل T</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTool('cable_dashed')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors font-medium ${
+              activeTool === 'cable_dashed'
+                ? 'bg-blue-600 text-white font-bold shadow-xs'
+                : 'hover:bg-slate-700 text-blue-300'
+            }`}
+            title="رسم خط متقطع (منقوط مع الطول)"
+          >
+            <span className="w-3 h-0.5 border-b-2 border-dashed border-blue-400" />
+            <span>خط متقطع</span>
           </button>
 
           <span className="w-px h-5 bg-slate-700 mx-1" />

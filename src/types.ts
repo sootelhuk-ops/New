@@ -174,6 +174,7 @@ export type CadTool =
   | 'cable_ng' 
   | 'cable_t' 
   | 'cable_kasht'
+  | 'cable_dashed'
   | 'rect' 
   | 'light_rect'
   | 'circle' 

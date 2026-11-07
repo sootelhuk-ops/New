@@ -782,7 +782,7 @@ export const CadCanvas: React.FC<CadCanvasProps> = ({
     if (
       presetCableLength &&
       presetCableLength > 0 &&
-      ['cable_as', 'cable_ng', 'cable_t', 'cable_kasht', 'line'].includes(activeTool)
+      ['cable_as', 'cable_ng', 'cable_t', 'cable_kasht', 'cable_dashed', 'line'].includes(activeTool)
     ) {
       const dx = orthoPoint.x - drawingStart.x;
       const dy = orthoPoint.y - drawingStart.y;
@@ -896,6 +896,26 @@ export const CadCanvas: React.FC<CadCanvasProps> = ({
         isMilling: true,
         label: `كشط ${parseFloat(meters)}M`,
         labelPosition: 'left',
+        labelSide: 'left',
+      };
+    } else if (activeTool === 'cable_dashed') {
+      newElement = {
+        id: `cable-dashed-${Date.now()}`,
+        type: 'line',
+        x: drawingStart.x,
+        y: drawingStart.y,
+        x2: currentMouse.x,
+        y2: currentMouse.y,
+        strokeColor: '#0022cc',
+        strokeWidth: 2.2,
+        strokeStyle: 'dashed',
+        soilType: 'AS',
+        label: `AS ${parseFloat(meters)}M`,
+        labelPosition:
+          Math.abs(currentMouse.x - drawingStart.x) >
+          Math.abs(currentMouse.y - drawingStart.y)
+            ? 'top'
+            : 'left',
         labelSide: 'left',
       };
     } else if (activeTool === 'line') {
@@ -2612,7 +2632,8 @@ export const CadCanvas: React.FC<CadCanvasProps> = ({
             {(activeTool === 'line' ||
               activeTool === 'cable_as' ||
               activeTool === 'cable_ng' ||
-              activeTool === 'cable_t') && (
+              activeTool === 'cable_t' ||
+              activeTool === 'cable_dashed') && (
               <>
                 <line
                   x1={drawingStart.x}

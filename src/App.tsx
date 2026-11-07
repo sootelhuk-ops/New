@@ -128,7 +128,7 @@ export default function App() {
   // Insert a predefined cable with exact length and orientation
   const handleInsertPredefinedCable = (
     meters: number,
-    type: 'KASHT' | 'AS' | 'NG' | 'T',
+    type: 'KASHT' | 'AS' | 'NG' | 'T' | 'DASHED',
     direction: 'vertical' | 'horizontal'
   ) => {
     const pxLen = meters * 25; // 25 px per meter
@@ -137,6 +137,7 @@ export default function App() {
     const endX = direction === 'horizontal' ? startX + pxLen : startX;
     const endY = direction === 'vertical' ? startY + pxLen : startY;
 
+    const isDashed = type === 'DASHED';
     const newCable: CanvasElement = {
       id: `cable-${type.toLowerCase()}-${Date.now()}`,
       type: 'line',
@@ -145,10 +146,13 @@ export default function App() {
       x2: endX,
       y2: endY,
       strokeColor: type === 'T' ? '#059669' : '#0022cc',
-      strokeWidth: type === 'KASHT' ? 2.8 : 2.5,
-      soilType: type,
+      strokeWidth: type === 'KASHT' ? 2.8 : isDashed ? 2.2 : 2.5,
+      strokeStyle: isDashed ? 'dashed' : 'solid',
+      soilType: isDashed ? 'AS' : type,
       isMilling: type === 'KASHT',
-      label: `${type === 'KASHT' ? 'كشط ' : type === 'NG' ? 'NG' : `${type} `}${meters}.0M`,
+      label: isDashed
+        ? `AS ${meters}.00M`
+        : `${type === 'KASHT' ? 'كشط ' : type === 'NG' ? 'NG' : `${type} `}${meters}.0M`,
       labelPosition: direction === 'vertical' ? 'left' : 'top',
       labelSide: 'left',
     };
